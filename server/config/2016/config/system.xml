@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+<adtf:project xmlns:adtf="adtf">
+ <general_settings>
+  <property name="active_configuration" type="String" value="Main" />
+  <property name="enable_messagebus" type="Bool" value="true" />
+  <property name="synchronizing_type" type="Int" value="1" />
+  <property name="global_log_level" type="Int" value="3" />
+  <property name="media_description_files" type="String" value="./../description/*.description;./../addons/*/description/*.description;./../src/examples/src/description/*.description;../../../description/*.*" />
+ </general_settings>
+ <configurations>
+  <configuration description="" name="Main">
+   <graph>
+    <subgraph alias="Base_Config" idref="Base_Config" priority="4" />
+    <connection connection_priority="50" dest="Base_Config.Watchdog_Alive_Flag" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
+    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="4">
+     <settings />
+    </filter>
+    <filter alias="AADC_Xtion_Camera" idref="adtf.aadc.aadc_xtionCamera" priority="4">
+     <settings>
+      <property name="Configuration File" type="String" value="..\..\..\configuration_files\xtionSettings.xml" />
+     </settings>
+    </filter>
+    <filter alias="TACO_Runtime_Service" idref="adtf.taco.RuntimeService" priority="4">
+     <settings>
+      <property name="Start Client" type="Bool" value="false" />
+      <property name="Start Vision" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="TACO_Runtime_Service.CarIMU" interface="" source="Base_Config.InerMeasUnit_Struct" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.WH_WheelSpeed_Sensor_Left" interface="" source="Base_Config.WheelLeft_Struct" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.WH_WheelSpeed_Sensor_Right" interface="" source="Base_Config.WheelRight_Struct" />
+    <filter alias="TACO_Rate_Limit" idref="adtf.taco.RateLimit" priority="3" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Left" interface="" source="Base_Config.Ultrasonic_Front_Left" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Center_Left" interface="" source="Base_Config.Ultrasonic_Front_Center_Left" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Center" interface="" source="Base_Config.Ultrasonic_Front_Center" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Center_Right" interface="" source="Base_Config.Ultrasonic_Front_Center_Right" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Right" interface="" source="Base_Config.Ultrasonic_Front_Right" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Side_Left" interface="" source="Base_Config.Ultrasonic_Side_Left" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Side_Right" interface="" source="Base_Config.Ultrasonic_Side_Right" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Rear_Left" interface="" source="Base_Config.Ultrasonic_Rear_Left" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Rear_Center" interface="" source="Base_Config.Ultrasonic_Rear_Center" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Rear_Right" interface="" source="Base_Config.Ultrasonic_Rear_Right" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.Xtion_RGB" interface="" source="AADC_Xtion_Camera.Video_RGB" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.Xtion_DEPTH" interface="" source="AADC_Xtion_Camera.Depth_Image" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.VOLT_measurement_circuit" interface="" source="Base_Config.Voltage_Measurement" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.VOLT_power_circuit" interface="" source="Base_Config.Voltage_SpeedCntrl" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.SteeringServo_input" interface="" source="TACO_Runtime_Service.SteeringServo_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.MainMotor_input" interface="" source="TACO_Runtime_Service.MainMotor_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.HeadLights_input" interface="" source="TACO_Runtime_Service.HeadLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.BackLights_input" interface="" source="TACO_Runtime_Service.BackLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.BrakeLights_input" interface="" source="TACO_Runtime_Service.BrakeLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.WarnLights_input" interface="" source="TACO_Runtime_Service.WarnLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.IndicatorLightsLeft_input" interface="" source="TACO_Runtime_Service.IndicatorLightsLeft_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.IndicatorLightsRight_input" interface="" source="TACO_Runtime_Service.IndicatorLightsRight_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.DriveStatus_input" interface="" source="TACO_Runtime_Service.DriveStatus_output" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.JuryCommand" interface="" source="Base_Config.Jury_Struct" />
+    <connection connection_priority="50" dest="Base_Config.Driver_Struct" interface="" source="TACO_Rate_Limit.DriveStatus_output" />
+    <filter alias="SteeringAngleMapper" idref="adtf.aadc.aadc_calibrationXML" priority="5">
+     <settings>
+      <property name="Configuration File For Interpolation" type="String" value="../../../configuration_files/a2o/SteeringConfig.xml" />
+     </settings>
+    </filter>
+    <filter alias="MainMotorMapper" idref="adtf.aadc.aadc_calibrationXML" priority="5">
+     <settings>
+      <property name="Configuration File For Interpolation" type="String" value="../../../configuration_files/a2o/MotorConfig.xml" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="MainMotorMapper.input_value" interface="" source="TACO_Rate_Limit.MainMotor_output" />
+    <connection connection_priority="50" dest="SteeringAngleMapper.input_value" interface="" source="TACO_Rate_Limit.SteeringServo_output" />
+    <connection connection_priority="50" dest="Base_Config.SteeringController" interface="" source="SteeringAngleMapper.output_value" />
+    <connection connection_priority="50" dest="Base_Config.SpeedController" interface="" source="MainMotorMapper.output_value" />
+    <connection connection_priority="50" dest="Base_Config.headLightEnabled" interface="" source="TACO_Rate_Limit.HeadLights_output" />
+    <connection connection_priority="50" dest="Base_Config.reverseLightsEnabled" interface="" source="TACO_Rate_Limit.BackLights_output" />
+    <connection connection_priority="50" dest="Base_Config.brakeLightEnabled" interface="" source="TACO_Rate_Limit.BrakeLights_output" />
+    <connection connection_priority="50" dest="Base_Config.hazzardLightsEnabled" interface="" source="TACO_Rate_Limit.WarnLights_output" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalLeftEnabled" interface="" source="TACO_Rate_Limit.IndicatorLightsLeft_output" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalRightEnabled" interface="" source="TACO_Rate_Limit.IndicatorLightsRight_output" />
+    <connection connection_priority="50" dest="Base_Config.Driver_Struct" interface="" source="TACO_Rate_Limit.DriveStatus_output" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalRightEnabled" interface="" source="TACO_Rate_Limit.IndicatorLightsRight_output" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalLeftEnabled" interface="" source="TACO_Rate_Limit.IndicatorLightsLeft_output" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.ManeuverList" interface="" source="Base_Config.Jury_ManeuverList" />
+    <filter alias="TACO_Image_Writer" idref="adtf.taco.ImageWriter" priority="6">
+     <settings>
+      <property name="active" type="Bool" value="false" />
+      <property name="Folder for the images" type="String" value="/home/aadc/images/" />
+     </settings>
+    </filter>
+    <connection active="false" connection_priority="50" dest="TACO_Image_Writer.Video_input" interface="" source="AADC_Xtion_Camera.Video_RGB" />
+    <filter alias="AADC_Marker_Detection_Filter" idref="adtf.aadc.aadc_markerDetection" priority="7">
+     <settings>
+      <property name="Calibration File for used Camera" type="String" value="../../../configuration_files/xtionIntrinsicCalib.yml" />
+      <property name="Dictionary File For Markers" type="String" value="../../../configuration_files/roadsign.yml" />
+     </settings>
+    </filter>
+    <filter alias="AADC_Marker_Evaluator" idref="adtf.aadc.aadc_markerEvaluator" priority="8" />
+    <connection connection_priority="50" dest="AADC_Marker_Evaluator.Road_Sign" interface="" source="AADC_Marker_Detection_Filter.RoadSign" />
+    <connection connection_priority="50" dest="AADC_Marker_Detection_Filter.Video_RGB_input" interface="" source="AADC_Xtion_Camera.Video_RGB" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.Signs" interface="" source="AADC_Marker_Detection_Filter.RoadSign_ext" />
+   </graph>
+  </configuration>
+ </configurations>
+ <fileinfo adtfversion="2.13.1" configversion="1.3" />
+ <configuration_settings />
+ <adtf_include source="../../BaseConfig/IncludeConfig.xml" />
+ <plugins>
+  <plugin optional="true" url="../../../bin/Linux/gcc/$(BUILD_TYPE_2)/*.plb" />
+  <plugin optional="true" url="../../../bin/Windows/vc10/$(BUILD_TYPE_2)/*.plb" />
+ </plugins>
+</adtf:project>

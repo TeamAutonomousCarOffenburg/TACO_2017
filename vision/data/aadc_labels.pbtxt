@@ -1,0 +1,39 @@
+item {
+  id: 1
+  name: 'person_crossing'
+}
+
+item {
+  id: 2
+  name: 'person'
+}
+
+item {
+  id: 3
+  name: 'child'
+}
+
+item {
+  id: 4
+  name: 'stop_line_left'
+}
+
+item {
+  id: 5
+  name: 'stop_line_right'
+}
+
+item {
+  id: 6
+  name: 'stop_line_ahead'
+}
+
+item {
+  id: 7
+  name: 'stop_line_oncoming'
+}
+
+item {
+  id: 8
+  name: 'car'
+}

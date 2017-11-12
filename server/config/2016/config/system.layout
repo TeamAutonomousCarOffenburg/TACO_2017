@@ -1,0 +1,5 @@
+<adtf:export xmlns:adtf="adtf">
+	<layout name="Main">
+		<filter Docked="false" Floating="false" Fullscreen="false" Height="661" Maximized="false" Minimized="false" PosX="580" PosY="-17" TopOfMain="false" Visible="true" Width="648" name="AADC_Car_Visualization" />
+	</layout>
+</adtf:export>

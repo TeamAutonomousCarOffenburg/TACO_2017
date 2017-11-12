@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+<adtf:project xmlns:adtf="adtf">
+ <general_settings>
+  <property name="active_configuration" type="String" value="Live" />
+  <property name="enable_messagebus" type="Bool" value="true" />
+  <property name="synchronizing_type" type="Int" value="1" />
+  <property name="global_log_level" type="Int" value="3" />
+  <property name="media_description_files" type="String" value="./../description/*.description;./../addons/*/description/*.description;./../src/examples/src/description/*.description;../../../description/*.*" />
+ </general_settings>
+ <configurations>
+  <configuration description="" name="Live">
+   <graph>
+    <subgraph alias="Base_Config" idref="Base_Config" priority="-1" />
+    <filter alias="AADC_Watchdog_Trigger" idref="adtf.aadc.watchdogTrigger" priority="1">
+     <settings />
+    </filter>
+    <filter alias="AADC_Basler_Camera" idref="adtf.aadc.baslercamera" priority="1">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <filter alias="AADC_Realsense_Camera" idref="adtf.aadc.aadc_realsense" priority="2">
+     <settings>
+      <property name="active" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="Base_Config.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
+    <filter alias="TACO_Runtime_Service" idref="adtf.taco.RuntimeService" priority="-5">
+     <settings>
+      <property name="Client Scenario" type="String" value="driveWaypoints" />
+      <property name="Start Vision" type="Bool" value="false" />
+      <property name="Start Client" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <filter alias="TACO_Rate_Limit" idref="adtf.taco.RateLimit" priority="-4" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Left" interface="" source="Base_Config.UltrasonicFrontLeft" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Center_Left" interface="" source="Base_Config.UltrasonicFrontCenterLeft" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Center" interface="" source="Base_Config.UltrasonicFrontCenter" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Center_Right" interface="" source="Base_Config.UltrasonicFrontCenterRight" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Front_Right" interface="" source="Base_Config.UltrasonicFrontRight" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Side_Left" interface="" source="Base_Config.UltrasonicSideLeft" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Side_Right" interface="" source="Base_Config.UltrasonicSideRight" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Rear_Left" interface="" source="Base_Config.UltrasonicRearCenterLeft" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Rear_Center" interface="" source="Base_Config.UltrasonicRearCenter" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.US_Rear_Right" interface="" source="Base_Config.UltrasonicRearCenter_Right" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.WH_WheelSpeed_Sensor_Left" interface="" source="Base_Config.WheelLeftStruct" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.WH_WheelSpeed_Sensor_Right" interface="" source="Base_Config.WheelRightStruct" />
+    <connection active="false" connection_priority="50" dest="TACO_Runtime_Service.Xtion_DEPTH" interface="" source="AADC_Realsense_Camera.outputDepthVisualization" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.SteeringServo_input" interface="" source="TACO_Runtime_Service.SteeringServo_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.MainMotor_input" interface="" source="TACO_Runtime_Service.MainMotor_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.HeadLights_input" interface="" source="TACO_Runtime_Service.HeadLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.BackLights_input" interface="" source="TACO_Runtime_Service.BackLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.BrakeLights_input" interface="" source="TACO_Runtime_Service.BrakeLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.WarnLights_input" interface="" source="TACO_Runtime_Service.WarnLights_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.IndicatorLightsLeft_input" interface="" source="TACO_Runtime_Service.IndicatorLightsLeft_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.IndicatorLightsRight_input" interface="" source="TACO_Runtime_Service.IndicatorLightsRight_output" />
+    <connection connection_priority="50" dest="TACO_Rate_Limit.DriveStatus_input" interface="" source="TACO_Runtime_Service.DriveStatus_output" />
+    <connection connection_priority="50" dest="Base_Config.headLightEnabled" interface="" source="TACO_Rate_Limit.HeadLights_output" />
+    <connection connection_priority="50" dest="Base_Config.reverseLightEnabled" interface="" source="TACO_Rate_Limit.BackLights_output" />
+    <connection connection_priority="50" dest="Base_Config.brakeLightEnabled" interface="" source="TACO_Rate_Limit.BrakeLights_output" />
+    <connection connection_priority="50" dest="Base_Config.hazzardLightEnabled" interface="" source="TACO_Rate_Limit.WarnLights_output" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalLeftEnabled" interface="" source="TACO_Rate_Limit.IndicatorLightsLeft_output" />
+    <connection connection_priority="50" dest="Base_Config.turnSignalRightEnabled" interface="" source="TACO_Rate_Limit.IndicatorLightsRight_output" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.JuryCommand" interface="" source="Base_Config.Jury_Struct" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.ManeuverList" interface="" source="Base_Config.Jury_ManeuverList" />
+    <connection connection_priority="50" dest="Base_Config.Driver_Struct" interface="" source="TACO_Rate_Limit.DriveStatus_output" />
+    <filter alias="SteeringServoMapper" idref="adtf.aadc.calibrationXML" priority="3">
+     <settings>
+      <property name="Configuration File For Interpolation" type="String" value="SteeringConfig.xml" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="SteeringServoMapper.input_value" interface="" source="TACO_Rate_Limit.SteeringServo_output" />
+    <connection connection_priority="50" dest="Base_Config.SteeringController" interface="" source="SteeringServoMapper.output_value" />
+    <connection connection_priority="50" dest="Base_Config.SpeedController" interface="" source="TACO_Rate_Limit.MainMotor_output" />
+    <filter alias="Basler_Display" idref="adtf.visual.video_display" priority="4">
+     <settings>
+      <property name="Title" type="String" value="Basler Display" />
+      <property name="active" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <filter alias="AADC_Marker_Evaluator" idref="adtf.aadc.markerEvaluator" priority="4">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <connection active="false" connection_priority="50" dest="Basler_Display.gcl_input" interface="" source="AADC_Basler_Camera.ROI_GCL" />
+    <filter alias="AADC_Marker_Detector" idref="adtf.aadc.markerDetector" priority="4">
+     <settings>
+      <property name="Calibration File for used Camera" type="String" value="../../../configuration_files/basler_afterFisheye_intrinsic_calibration.yml" />
+      <property name="Debug Output to Console" type="Bool" value="true" />
+      <property name="Detector Paramater File" type="String" value="../../../configuration_files/detector_params.yml" />
+      <property name="Size of Markers" type="Float" value="0,12.0" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="AADC_Marker_Evaluator.Road_Sign" interface="" source="AADC_Marker_Detector.RoadSign" />
+    <filter alias="Depth_RGB_Display" idref="adtf.visual.video_display" priority="5">
+     <settings>
+      <property name="Title" type="String" value="Depth RGB Display" />
+      <property name="active" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <connection active="false" connection_priority="50" dest="Depth_RGB_Display.input" interface="" source="AADC_Realsense_Camera.outputRGB" />
+    <filter alias="TACO_Fisheye_Undistortion_ROI" idref="adtf.taco.FisheyeUndistortionROI" priority="6">
+     <settings>
+      <property name="Calibration File" type="String" value="../../../configuration_files/basler_fisheye_intrinsic_calib.yml" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="TACO_Fisheye_Undistortion_ROI.Video_Input" interface="" source="AADC_Basler_Camera.outputRGB" />
+    <connection active="false" connection_priority="50" dest="Basler_Display.input" interface="" source="TACO_Fisheye_Undistortion_ROI.Video_Output" />
+    <filter alias="TACO_Camera_Image_Relay" idref="adtf.taco.CameraImageRelay" priority="7">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="TACO_Camera_Image_Relay.Video_input" interface="" source="TACO_Fisheye_Undistortion_ROI.Video_Output" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.Basler" interface="" source="TACO_Fisheye_Undistortion_ROI.Video_Output" />
+    <connection active="false" connection_priority="50" dest="TACO_Runtime_Service.Xtion_RGB" interface="" source="AADC_Realsense_Camera.outputRGB" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.CarIMU" interface="" source="Base_Config.InerMeasUnitStruct" />
+    <filter alias="AADC_Driver_Module" idref="adtf.aadc.driverModule" priority="8">
+     <settings>
+      <property name="active" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <connection active="false" connection_priority="50" dest="AADC_Driver_Module.Jury_Struct" interface="" source="Base_Config.Jury_Struct" />
+    <connection active="false" connection_priority="50" dest="AADC_Driver_Module.Maneuver_List" interface="" source="Base_Config.Jury_ManeuverList" />
+    <filter alias="TACO_Image_Writer" idref="adtf.taco.ImageWriter" priority="-22">
+     <settings>
+      <property name="active" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="AADC_Marker_Detector.Video_RGB_input" interface="" source="TACO_Fisheye_Undistortion_ROI.Video_Output" />
+    <connection connection_priority="50" dest="TACO_Runtime_Service.Signs" interface="" source="AADC_Marker_Detector.RoadSign_ext" />
+    <connection active="false" connection_priority="50" dest="TACO_Image_Writer.Video_input" interface="" source="TACO_Fisheye_Undistortion_ROI.Video_Output" />
+    <subgraph alias="Jury_Visualization_Position" idref="Jury_Visualization_Position" priority="9" url="udp://192.168.1.20:30000" />
+    <connection connection_priority="50" dest="Jury_Visualization_Position.Position" interface="" source="TACO_Runtime_Service.Position_output" />
+    <filter alias="AADC_Map_Visualization" idref="adtf.aadc.MapVisualization" priority="10">
+     <settings>
+      <property name="IndoorMap File" type="String" value="../../../maps/aadc2017#2.xodr" />
+      <property name="active" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <connection active="false" connection_priority="50" dest="AADC_Map_Visualization.Position" interface="" source="TACO_Runtime_Service.Position_output" />
+    <connection active="false" connection_priority="50" dest="AADC_Map_Visualization.TrafficSign" interface="" source="TACO_Runtime_Service.RoadSign_output" />
+    <subgraph active="false" alias="Jury_Visualization_Objects" idref="Jury_Visualization_Objects" priority="11" url="tcp://192.168.1.20:30001" />
+    <connection active="false" connection_priority="50" dest="Jury_Visualization_Objects.TrafficSign" interface="" source="TACO_Runtime_Service.RoadSign_output" />
+    <connection active="false" connection_priority="50" dest="Jury_Visualization_Objects.ParkingSpace" interface="" source="TACO_Runtime_Service.ParkingSpace_output" />
+    <connection active="false" connection_priority="50" dest="AADC_Map_Visualization.ParkingSpace" interface="" source="TACO_Runtime_Service.ParkingSpace_output" />
+    <filter alias="Sign_Detection_Display" idref="adtf.visual.video_display" priority="12">
+     <settings>
+      <property name="active" type="Bool" value="false" />
+     </settings>
+    </filter>
+    <connection active="false" connection_priority="50" dest="Sign_Detection_Display.input" interface="" source="AADC_Marker_Detector.Video_RGB_output" />
+    <connection active="false" connection_priority="50" dest="Sign_Detection_Display.gcl_input" interface="" source="AADC_Marker_Detector.GCL_Markers" />
+    <connection active="false" connection_priority="50" dest="Jury_Visualization_Objects.Obstacle" interface="" source="TACO_Runtime_Service.Obstacle_output" />
+    <connection active="false" connection_priority="50" dest="AADC_Map_Visualization.Obstacle" interface="" source="TACO_Runtime_Service.Obstacle_output" />
+    <connection connection_priority="50" dest="Base_Config.RoadSign_ext" interface="" source="AADC_Marker_Detector.RoadSign_ext" />
+   </graph>
+   <settings>
+    <property name="connection_priority" type="Int" value="50" />
+   </settings>
+  </configuration>
+  <configuration description="" name="Playback">
+   <graph>
+    <filter alias="Harddisk_Player" idref="adtf.stg.harddisk_player" priority="1" />
+    <filter alias="AADC_Fisheye_Undistortion_" idref="adtf.aadc.fisheyeUndistort" priority="1">
+     <settings>
+      <property name="Calibration File" type="String" value="..\..\..\configuration_files\basler_fisheye_intrinsic_calib.yml" />
+     </settings>
+    </filter>
+    <subgraph alias="Lane_Detection" idref="Lane_Detection" priority="2" />
+    <subgraph alias="Marker_Detection" idref="Marker_Detection" priority="3" />
+    <connection connection_priority="50" dest="Lane_Detection.video_Basler_undistorted" interface="" source="AADC_Fisheye_Undistortion_.Video_Output" />
+    <connection connection_priority="50" dest="Marker_Detection.video_Basler_undistorted" interface="" source="AADC_Fisheye_Undistortion_.Video_Output" />
+    <filter alias="AADC_Sensor_Visualization" idref="adtf.aadc.SensorVisualization" priority="4">
+     <settings />
+    </filter>
+    <filter alias="Realsense_Depth_Display" idref="adtf.visual.video_display" priority="21">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <filter alias="Realsense_RGB_Proc_Display" idref="adtf.visual.video_display" priority="20">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <filter alias="RearCam_Display" idref="adtf.visual.video_display" priority="22">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <connection connection_priority="50" dest="AADC_Fisheye_Undistortion_.Video_Input" interface="" source="Harddisk_Player.Basler_outputRGB" />
+    <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.UltrasonicStruct" />
+    <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.InerMeasUnitStruct" />
+    <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.WheelLeftStruct" />
+    <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.WheelRightStruct" />
+    <connection connection_priority="50" dest="AADC_Sensor_Visualization" interface="" source="Harddisk_Player.VoltageStruct" />
+    <connection connection_priority="50" dest="Realsense_RGB_Proc_Display.input" interface="" source="Harddisk_Player.Realsense_outputRGB" />
+    <connection connection_priority="50" dest="RearCam_Display.input" interface="" source="Harddisk_Player.RearView_outputRGB" />
+   </graph>
+  </configuration>
+  <configuration description="" name="Recording">
+   <graph>
+    <filter alias="Harddisk_Recorder" idref="adtf.stg.harddisk_recorder" priority="1">
+     <settings>
+      <property name="splitsize" type="Int" value="3000" />
+     </settings>
+    </filter>
+    <subgraph alias="Live" idref="Live" priority="2" />
+   </graph>
+  </configuration>
+  <configuration description="" name="Lane_Detection">
+   <graph>
+    <filter alias="AADC_Lane_Detection" idref="adtf.aadc_LaneDetection" priority="10">
+     <settings>
+      <property name="ROI::Height" type="Int" value="100" />
+      <property name="ROI::YOffset" type="Int" value="620" />
+      <property name="Algorithm::Image Binarization Threshold" type="Int" value="150" />
+      <property name="Algorithm::Maximum Line Width" type="Int" value="50" />
+     </settings>
+    </filter>
+    <filter alias="Lane_Detection_Display" idref="adtf.visual.video_display" priority="23">
+     <settings>
+      <property name="ScaleGCL" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <inport alias="video_Basler_undistorted" />
+    <connection connection_priority="50" dest="AADC_Lane_Detection.Video_Input" interface="" source="video_Basler_undistorted" />
+    <connection connection_priority="50" dest="Lane_Detection_Display.gcl_input" interface="" source="AADC_Lane_Detection.GCL" />
+    <connection connection_priority="50" dest="Lane_Detection_Display.input" interface="" source="AADC_Lane_Detection.Video_Output_Debug" />
+   </graph>
+  </configuration>
+  <configuration description="" name="Marker_Detection">
+   <graph>
+    <filter alias="Basler_RGB_Marker_Display" idref="adtf.visual.video_display" priority="24">
+     <settings>
+      <property name="active" type="Bool" value="true" />
+     </settings>
+    </filter>
+    <filter alias="AADC_Marker_Detector" idref="adtf.aadc.markerDetector" priority="12">
+     <settings>
+      <property name="Calibration File for used Camera" type="String" value="../../../configuration_files/basler_afterFisheye_intrinsic_calibration.yml" />
+      <property name="Detector Paramater File" type="String" value="../../../configuration_files/detector_params.yml" />
+      <property name="Size of Markers" type="Float" value="0,117.0" />
+     </settings>
+    </filter>
+    <inport alias="video_Basler_undistorted" />
+    <connection connection_priority="50" dest="Basler_RGB_Marker_Display.gcl_input" interface="" source="AADC_Marker_Detector.GCL_Markers" />
+    <connection connection_priority="50" dest="Basler_RGB_Marker_Display.input" interface="" source="video_Basler_undistorted" />
+    <connection connection_priority="50" dest="AADC_Marker_Detector.Video_RGB_input" interface="" source="video_Basler_undistorted" />
+   </graph>
+  </configuration>
+  <configuration description="" name="Jury_Visualization_Position">
+   <graph>
+    <inport alias="Position" />
+   </graph>
+  </configuration>
+  <configuration description="" name="Jury_Visualization_Objects">
+   <graph>
+    <inport alias="TrafficSign" />
+    <inport alias="Obstacle" />
+    <inport alias="ParkingSpace" />
+   </graph>
+  </configuration>
+ </configurations>
+ <fileinfo adtfversion="2.14.0" configversion="1.3" />
+ <configuration_settings />
+ <adtf_include source="../../BaseConfig/IncludeConfig.xml" />
+ <plugins>
+  <plugin optional="true" url="../../../_install/linux64/bin/$BUILD_TYPE_2$/*.plb" />
+  <plugin optional="true" url="../../../_install/win64_vc100/bin/$BUILD_TYPE_2$/*.plb" />
+ </plugins>
+</adtf:project>

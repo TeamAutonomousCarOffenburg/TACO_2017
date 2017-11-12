@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tacoAgent">
+    <property name="buildDir" value="build/agent"/>
+
+    <target name="clean">
+        <delete dir="${buildDir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${buildDir}"/>
+        <javac destdir="${buildDir}" includeantruntime="false" debug="true">
+            <src path="../base/src"/>
+            <src path="../src"/>
+            <classpath>
+                <fileset dir="../base/lib/runtime">
+                    <include name="**/*.jar" />
+                </fileset>
+                <fileset dir="../lib">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="out/tacoAgent.jar" basedir="${buildDir}">
+            <manifest>
+                <attribute name="Main-Class" value="taco.AudiCupClient"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="deploy" depends="jar">
+        <delete dir="out/tacoAgent"/>
+        <mkdir dir="out/tacoAgent"/>
+        <mkdir dir="out/tacoAgent/log"/>
+
+        <copy todir="out/tacoAgent">
+            <fileset dir="../scripts/agent"/>
+        </copy>
+
+        <copy file="out/tacoAgent.jar" todir="out/tacoAgent/lib"/>
+        <copy file="../lib/runtime/kdoLib.jar" todir="out/tacoAgent/lib"/>
+        <copy file="../base/lib/runtime/commons-math3-3.3.jar" todir="out/tacoAgent/lib"/>
+        <copy file="../base/lib/runtime/gson-2.7.jar" todir="out/tacoAgent/lib"/>
+    </target>
+</project>

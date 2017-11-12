@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="base">
+    <property environment="env"/>
+    <property name="client.location" value="../"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="base.classpath">
+        <pathelement location="build/classes"/>
+        <pathelement location="build/testClasses"/>
+        <pathelement location="lib/runtime/commons-math3-3.3.jar"/>
+        <pathelement location="lib/runtime/gson-2.7.jar"/>
+        <pathelement location="lib/test/junit-4.8.1.jar"/>
+        <pathelement location="lib/test/mockito-all-2.0.2-beta.jar"/>
+        <pathelement location="lib/tools/xstream-1.4.2.jar"/>
+        <pathelement location="lib/tools/jogamp/jogl-all.jar"/>
+        <pathelement location="lib/tools/xfiledialog/xfiledialog.jar"/>
+        <pathelement location="lib/tools/jogamp/gluegen-rt.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="build/classes"/>
+        <mkdir dir="build/testClasses"/>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="config">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="srcTools">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="build/testClasses">
+            <fileset dir="srcTest">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="build/classes"/>
+        <delete dir="build/testClasses"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="config"/>
+            <src path="srcTools"/>
+            <classpath refid="base.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="build/testClasses" includeantruntime="false" source="${source}" target="${target}">
+            <src path="srcTest"/>
+            <classpath refid="base.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${client.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${client.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="AllBaseTests">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="hso.autonomy.agent.model.agentmeta.impl.OffsetJointMapperTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.agent.model.agentmodel.impl.BodyModelTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.agent.model.agentmodel.impl.BodyPartTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.agent.model.agentmodel.impl.CompositeJointTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.agent.model.agentmodel.impl.HingeJointTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.command.UndoListTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.commandline.BooleanArgumentTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.commandline.EnumArgumentTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.commandline.IntegerArgumentTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.commandline.StringArgumentTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.BezierFunctionTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.FunctionUtilTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.LookupFunctionTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.LookupMatrix3DTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.LookupMatrixTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.PiecewiseLinearFunctionTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.Polynomial5DegreeInterpolatorTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.function.SinFunctionTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.AngleTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.Circle2DTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.DenavitHartenbergTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.GeometryTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.Line2DTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.PolygonTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.Pose2DTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.Pose3DTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.SphereTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.geometry.VectorUtilsTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.misc.ByteUtilTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.misc.DurationUtilTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.misc.FuzzyCompareTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.misc.MapUtilTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.misc.SayCoderTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.misc.ValueUtilTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.observer.SubjectTest" todir="${junit.output.dir}"/>
+            <test name="hso.autonomy.util.symboltreeparser.SymbolTreeParserTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="base.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>

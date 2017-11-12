@@ -1,0 +1,411 @@
+{
+	"floorHeight": 0.02,
+	"steeringServoName": "SteeringServo",
+	"mainMotorName": "MainMotor",
+	"frontAxle": {
+		"name": "frontAxle",
+		"position": {
+			"x": 0.36,
+			"y": 0.0,
+			"z": 0.0356246525
+		},
+		"length": 0.24,
+		"wheelDiameter": 0.111249305
+	},
+	"rearAxle": {
+		"name": "rearAxle",
+		"position": {
+			"x": 0.0,
+			"y": 0.0,
+			"z": 0.0356246525
+		},
+		"length": 0.26,
+		"wheelDiameter": 0.111249305,
+		"wheelAngle": 4.5,
+		"leftWheelTacho": "WH_WheelSpeed_Sensor_Left",
+		"rightWheelTacho": "WH_WheelSpeed_Sensor_Right"
+	},
+	"imuConfigs": [
+		{
+			"name": "CarIMU",
+			"pose": {
+				"position": {
+					"x": -0.06,
+					"y": 0.0,
+					"z": 0.01
+				},
+				"orientation": {
+					"angle": 180.0,
+					"axis": {
+						"x": 0.707107,
+						"y": 0.707107,
+						"z": -4.32978e-17
+					}
+				}
+			}
+		}
+	],
+	"ultrasonicConfigs": [
+		{
+			"name": "US_Front_Left",
+			"pose": {
+				"position": {
+					"x": 0.45,
+					"y": 0.115,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": 60.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Front_Center_Left",
+			"pose": {
+				"position": {
+					"x": 0.47,
+					"y": 0.055,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": 30.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Front_Center",
+			"pose": {
+				"position": {
+					"x": 0.47,
+					"y": 0.0,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": 0.0,
+					"axis": {
+						"x": 1.0,
+						"y": 0.0,
+						"z": 0.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Front_Center_Right",
+			"pose": {
+				"position": {
+					"x": 0.47,
+					"y": -0.055,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": -30.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Front_Right",
+			"pose": {
+				"position": {
+					"x": 0.47,
+					"y": -0.115,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": -60.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Side_Left",
+			"pose": {
+				"position": {
+					"x": 0.26,
+					"y": 0.14,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": 90.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Side_Right",
+			"pose": {
+				"position": {
+					"x": 0.26,
+					"y": -0.14,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": -90.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Rear_Left",
+			"pose": {
+				"position": {
+					"x": -0.09,
+					"y": 0.115,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": 120.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Rear_Center",
+			"pose": {
+				"position": {
+					"x": -0.11,
+					"y": 0.0,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": -180.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		},
+		{
+			"name": "US_Rear_Right",
+			"pose": {
+				"position": {
+					"x": -0.09,
+					"y": -0.115,
+					"z": 0.02
+				},
+				"orientation": {
+					"angle": -120.0,
+					"axis": {
+						"x": 0.0,
+						"y": 0.0,
+						"z": 1.0
+					}
+				}
+			},
+			"minDistance": 0.02,
+			"maxDistance": 4.0,
+			"scanWidth": 0.15
+		}
+	],
+	"rotationConfigs": [
+		{
+			"name": "WH_WheelSpeed_Sensor_Right",
+			"pose": {
+				"position": {
+					"x": 0.0,
+					"y": -0.123,
+					"z": 0.0
+				},
+				"orientation": {
+					"angle": 0.0,
+					"axis": {
+						"x": 1.0,
+						"y": 0.0,
+						"z": 0.0
+					}
+				}
+			}
+		},
+		{
+			"name": "WH_WheelSpeed_Sensor_Left",
+			"pose": {
+				"position": {
+					"x": 0.0,
+					"y": 0.123,
+					"z": 0.0
+				},
+				"orientation": {
+					"angle": 0.0,
+					"axis": {
+						"x": 1.0,
+						"y": 0.0,
+						"z": 0.0
+					}
+				}
+			}
+		}
+	],
+	"cameraConfigs": [
+		{
+			"name": "Xtion_RGB",
+			"pose": {
+				"position": {
+					"x": 0.282,
+					"y": 0.2,
+					"z": 0.186
+				},
+				"orientation": {
+					"angle": 0.0,
+					"axis": {
+						"x": 1.0,
+						"y": 0.0,
+						"z": 0.0
+					}
+				}
+			},
+			"width": 640,
+			"height": 480,
+			"focalPointX": 320.0,
+			"focalPointY": 240.0,
+			"focalLengthX": 552.5,
+			"focalLengthY": 552.5
+		},
+		{
+			"name": "Basler",
+			"pose": {
+				"position": {
+					"x": 0.282,
+					"y": 0.0,
+					"z": 0.225
+				},
+				"orientation": {
+					"angle": 0.0,
+					"axis": {
+						"x": 1.0,
+						"y": 0.0,
+						"z": 0.0
+					}
+				}
+			},
+			"width": 1240,
+			"height": 330,
+			"focalPointX": 586.0,
+			"focalPointY": 187.0,
+			"focalLengthX": 400.0,
+			"focalLengthY": 300.0
+		}
+	],
+	"depthCameraConfigs": [
+		{
+			"name": "Xtion_DEPTH",
+			"pose": {
+				"position": {
+					"x": 0.282,
+					"y": 0.5,
+					"z": 0.186
+				},
+				"orientation": {
+					"angle": 0.0,
+					"axis": {
+						"x": 1.0,
+						"y": 0.0,
+						"z": 0.0
+					}
+				}
+			},
+			"width": 320,
+			"height": 240,
+			"focalPointX": 160.0,
+			"focalPointY": 120.0,
+			"focalLengthX": 277.0,
+			"focalLengthY": 277.0
+		}
+	],
+	"motorConfigs": [
+		{
+			"name": "MainMotor"
+		}
+	],
+	"lightConfigs": [
+		{
+			"name": "HeadLights"
+		},
+		{
+			"name": "BackLights"
+		},
+		{
+			"name": "BrakeLights"
+		},
+		{
+			"name": "WarnLights"
+		},
+		{
+			"name": "IndicatorLightsLeft"
+		},
+		{
+			"name": "IndicatorLightsRight"
+		}
+	],
+	"statusConfigs": [
+		{
+			"name": "DriveStatus"
+		}
+	],
+	"servoDriveConfigs": [
+		{
+			"name": "SteeringServo",
+			"min": -30.0,
+			"max": 30.0
+		}
+	]
+}

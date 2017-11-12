@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="build/classes" path="src"/>
+	<classpathentry kind="src" output="build/classes" path="config"/>
+	<classpathentry kind="src" output="build/classes" path="srcTools"/>
+	<classpathentry kind="src" output="build/testClasses" path="srcTest"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/runtime/commons-math3-3.3.jar" sourcepath="libsrc/runtime/commons-math3-3.3-sources.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/gson-2.7.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit-4.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/test/mockito-all-2.0.2-beta.jar"/>
+	<classpathentry kind="lib" path="lib/tools/xstream-1.4.2.jar"/>
+	<classpathentry kind="lib" path="lib/tools/jogamp/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/tools/xfiledialog/xfiledialog.jar"/>
+	<classpathentry kind="lib" path="lib/tools/jogamp/gluegen-rt.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

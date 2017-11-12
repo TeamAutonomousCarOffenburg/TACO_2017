@@ -1,0 +1,10 @@
+<adtf:export xmlns:adtf="adtf">
+ <folder name="Main">
+  <folder name="components">
+   <folder filter_tree_expanded_list="" name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="184" Visible="true" Width="304" name="AADC_Marker_Evaluator" />
+  </folder>
+ </folder>
+</adtf:export>

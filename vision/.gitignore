@@ -1,0 +1,4 @@
+pretrained/*
+graphs
+data/*.record
+*.log

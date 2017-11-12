@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="neues_auto">
+    <serverData>
+      <paths name="gpu_cluster">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="neues_auto">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/object_detection_server/model_ckpts" />
+            <excludedPath local="true" path="$PROJECT_DIR$/object_detection_server/pretrained" />
+            <excludedPath local="true" path="$PROJECT_DIR$/object_detection_server/TFRecords" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="neues_auto_hotspot">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/object_detection_server/model_ckpts" />
+            <excludedPath local="true" path="$PROJECT_DIR$/object_detection_server/pretrained" />
+            <excludedPath local="true" path="$PROJECT_DIR$/object_detection_server/TFRecords" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

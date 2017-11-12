@@ -1,0 +1,22 @@
+<adtf:export xmlns:adtf="adtf">
+ <folder name="Marker_Detection">
+  <folder name="components">
+   <folder name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="466" PosX="9" PosY="15" Visible="true" Width="784" name="Basler_RGB_Marker_Display" />
+  </folder>
+ </folder>
+ <folder name="Live">
+  <folder name="components">
+   <folder filter_tree_expanded_list="" name="FilterTraceView" />
+  </folder>
+  <folder name="windows">
+   <folder Height="421" Maximized="false" PosX="1876" PosY="16" Visible="true" Width="825" name="AADC_Marker_Evaluator" />
+   <folder Height="399" Maximized="false" PosX="44" PosY="7" Visible="false" Width="1120" name="Basler_Display" />
+   <folder Height="454" PosX="1873" PosY="16" Visible="true" Width="632" name="Depth_RGB_Display" />
+   <folder Height="614" Visible="true" Width="496" name="AADC_Driver_Module" />
+   <folder Height="497" Visible="true" Width="963" name="AADC_Map_Visualization" />
+  </folder>
+ </folder>
+</adtf:export>
