@@ -40,8 +40,8 @@ public class ActionMessage
 	@SerializedName(POSITION)
 	private PositionEffector position;
 
-	@SerializedName(OBSTACLE)
-	private ObstacleEffector obstacles;
+	//	@SerializedName(OBSTACLE)
+	//	private ObstacleEffector obstacles;
 
 	@SerializedName(ROAD_SIGN)
 	private RoadSignEffector roadsigns;
@@ -84,9 +84,9 @@ public class ActionMessage
 			case POSITION:
 				position = (PositionEffector) effector;
 				break;
-			case OBSTACLE:
-				obstacles = (ObstacleEffector) effector;
-				break;
+			//			case OBSTACLE:
+			//				obstacles = (ObstacleEffector) effector;
+			//				break;
 			case PARKING_SPACE:
 				parkingSpaces = (ParkingSpaceEffector) effector;
 				break;

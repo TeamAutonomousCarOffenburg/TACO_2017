@@ -226,7 +226,13 @@ public class SegmentUtils
 			return result;
 		}
 
-		int mostMiddleIndex = SegmentUtils.getMidlineIndex(intersections, mid);
+		int countMidlines = countMidlineIndex(intersections);
+		if (countMidlines > 1) {
+			// we change the array size to indicate that we had two or more  midline candidates
+			result = new Vector3D[4];
+		}
+
+		int mostMiddleIndex = getMidlineIndex(intersections, mid);
 
 		if (mostMiddleIndex >= 0) {
 			// we have a middle line, so take right and left with respect to middle
@@ -278,6 +284,19 @@ public class SegmentUtils
 			}
 		}
 		return intersections;
+	}
+
+	private static int countMidlineIndex(List<Intersection> intersections)
+	{
+		Iterator<Intersection> iterator = intersections.iterator();
+		int result = 0;
+		while (iterator.hasNext()) {
+			Intersection current = iterator.next();
+			if (current.getType() == LineType.MIDDLE) {
+				result++;
+			}
+		}
+		return result;
 	}
 
 	private static int getMidlineIndex(List<Intersection> intersections, Vector2D mid)

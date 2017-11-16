@@ -2,6 +2,7 @@ package taco.agent.model.agentmodel.impl;
 
 import hso.autonomy.agent.communication.action.IEffector;
 import taco.agent.communication.action.IAudiCupAction;
+import taco.agent.communication.action.impl.ObstacleEffector;
 import taco.agent.communication.action.impl.RoadSignEffector;
 import taco.agent.model.agentmodel.IRoadSignActuator;
 import taco.agent.model.worldmodel.signdetection.RoadSign;
@@ -26,7 +27,11 @@ public class RoadSignActuator extends AudiCupActuator implements IRoadSignActuat
 	@Override
 	public boolean createAction(IAudiCupAction action, Map<String, IEffector> effectors)
 	{
+		if (roadSign == null) {
+			return false;
+		}
 		effectors.put(getName(), new RoadSignEffector(roadSign));
+		roadSign = null;
 		return true;
 	}
 }

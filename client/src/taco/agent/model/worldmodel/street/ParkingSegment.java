@@ -19,17 +19,26 @@ public class ParkingSegment extends Segment
 
 	private boolean[] occupied;
 
+	private boolean ascending;
+
+	public boolean isAscending()
+	{
+		return ascending;
+	}
+
 	/**
 	 * @param type horizontal or vertical
 	 * @param firstID the lowest id of the four parking slots
+	 * @param ascending
 	 * @param parentLink in link of the parent segment's closer lane
 	 * @param distance the distance of the first spot with respect to the parentLink (axis parallel)
 	 */
-	public ParkingSegment(
-			StreetMap map, SegmentType type, int firstID, SegmentLink parentLink, double distance, boolean[] occupied)
+	public ParkingSegment(StreetMap map, SegmentType type, int firstID, boolean ascending, SegmentLink parentLink,
+			double distance, boolean[] occupied)
 	{
 		super(type);
 		this.firstID = firstID;
+		this.ascending = ascending;
 		this.occupied = occupied;
 
 		double step = 0.5;
@@ -39,7 +48,11 @@ public class ParkingSegment extends Segment
 
 		// create the links
 		double y = -CROSSING_HALF_LENGTH + LANE_HALF_WIDTH + 0.01;
-		for (int i = 0; i < 4; i++) {
+		for (int index = 0; index < 4; index++) {
+			int i = index;
+			if (!ascending) {
+				i = 3 - index;
+			}
 			IPose2D pose = parentLink.getPose().applyTo(new Pose2D(distance + i * step, y, Angle.ANGLE_90.negate()));
 			Segment segment = map.getSegmentContaining(pose.getPosition());
 			inOptions[i] = new SegmentLink(pose, segment, this);

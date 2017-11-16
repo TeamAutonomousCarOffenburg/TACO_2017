@@ -47,9 +47,9 @@ public interface IAudiCupWorldModel extends IWorldModel {
 
 	boolean isStraightStreet(int elements);
 
-	boolean closeToCrosswalk();
+	boolean isCloseToCrosswalk();
 
-	boolean closeToCrossing();
+	boolean isCloseToCrossing();
 
-	boolean closeToCurve();
+	boolean isCloseToCurve();
 }

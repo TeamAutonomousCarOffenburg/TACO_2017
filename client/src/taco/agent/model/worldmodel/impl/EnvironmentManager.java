@@ -1,5 +1,11 @@
 package taco.agent.model.worldmodel.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import hso.autonomy.util.geometry.Angle;
 import hso.autonomy.util.geometry.IPose2D;
 import hso.autonomy.util.geometry.Pose2D;
@@ -14,9 +20,6 @@ import taco.agent.model.worldmodel.street.ParkingSegment;
 import taco.agent.model.worldmodel.street.Segment;
 import taco.agent.model.worldmodel.street.StreetMap;
 import taco.util.SignType;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class EnvironmentManager
 {
@@ -62,7 +65,11 @@ public class EnvironmentManager
 					continue;
 				}
 
-				int id = parking.getFirstID() + i;
+				int increment = i;
+				if (!parking.isAscending()) {
+					increment = 3 - i;
+				}
+				int id = parking.getFirstID() + increment;
 				ParkingSpaceState state = ParkingSpaceState.FREE;
 				if (parking.isOccupied(i)) {
 					state = ParkingSpaceState.OCCUPIED;

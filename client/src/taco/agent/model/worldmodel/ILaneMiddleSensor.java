@@ -45,9 +45,10 @@ public interface ILaneMiddleSensor {
 	 * Checks if we can reposition side wise when switching to a new segment
 	 * @param currentSegment the segment we drive in
 	 * @param carPose the current pose of the car
+	 * @param delta the delta by which we require to be inside the segment (in m)
 	 * @return the new pose of the car, null if not possible
 	 */
-	IPose2D calculateLateralRepositioningOnSegmentChange(RuntimeSegment currentSegment, IPose2D carPose);
+	IPose2D calculateLateralRepositioningOnSegmentChange(RuntimeSegment currentSegment, IPose2D carPose, double delta);
 
 	/**
 	 * @return the pixel difference of expected and real lane middle x coordinate

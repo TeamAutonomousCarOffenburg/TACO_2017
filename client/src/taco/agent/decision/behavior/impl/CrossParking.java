@@ -4,7 +4,6 @@ import hso.autonomy.agent.decision.behavior.BehaviorMap;
 import hso.autonomy.agent.model.thoughtmodel.IThoughtModel;
 import hso.autonomy.util.geometry.Angle;
 import hso.autonomy.util.geometry.IPose2D;
-import hso.autonomy.util.geometry.Polygon;
 import hso.autonomy.util.geometry.Pose2D;
 import taco.agent.decision.behavior.IBehaviorConstants;
 import taco.agent.decision.behavior.IFollowLane;
@@ -12,9 +11,10 @@ import taco.agent.decision.behavior.base.AudiCupComplexBehavior;
 import taco.agent.model.agentmodel.IAudiCupAgentModel;
 import taco.agent.model.agentmodel.IAudiCupMotor;
 import taco.agent.model.agentmodel.impl.enums.LightName;
+import taco.agent.model.worldmodel.ParkingSpaceState;
 import taco.agent.model.worldmodel.impl.ParkingSpace;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class CrossParking extends AudiCupComplexBehavior
 {
@@ -28,13 +28,12 @@ public class CrossParking extends AudiCupComplexBehavior
 
 	private ParkingSpace targetParkingSpace;
 
-	private Polygon spaceMeasurementArea;
-
 	private int desiredParkingSpace;
 
 	private IPose2D startPosition;
 
 	private IPose2D next;
+
 	private IPose2D afterNext;
 
 	public CrossParking(IThoughtModel thoughtModel, BehaviorMap behaviors)
@@ -61,7 +60,6 @@ public class CrossParking extends AudiCupComplexBehavior
 		super.init();
 		phase = Phase.DRIVE_TO_SPACE;
 		targetParkingSpace = null;
-		spaceMeasurementArea = null;
 		desiredParkingSpace = 2;
 		next = null;
 		afterNext = null;
@@ -87,18 +85,20 @@ public class CrossParking extends AudiCupComplexBehavior
 		IAudiCupAgentModel agentModel = getAgentModel();
 
 		getThoughtModel().log("parkingPhase", phase);
-
 		switch (phase) {
 		case DRIVE_TO_SPACE:
 			agentModel.getLight(LightName.INDICATOR_RIGHT).turnOn();
 			followLane.setSpeed(IAudiCupMotor.LOW_SPEED);
-
 			if (next == null) {
-				next = targetSpacePosition.applyTo(new Pose2D(0, 0.25));
-				afterNext = targetSpacePosition.applyTo(new Pose2D(0.5, 0.5, Angle.deg(45)));
-				drawNextPoints(next, afterNext);
-				driveToPose.setTargetPose(next, afterNext, IAudiCupMotor.LOW_SPEED, true);
+				next = targetSpacePosition.applyTo(new Pose2D(-0.2, 0.25));
+				afterNext = targetSpacePosition.applyTo(new Pose2D(0.3, 0.7, Angle.deg(45)));
+				if (currentCarPosition.getDistanceTo(next) < 0.1) {
+					next = targetSpacePosition.applyTo(new Pose2D(-0.5, 0.25));
+					afterNext = targetSpacePosition.applyTo(new Pose2D(-1, 0.25));
+				}
 			}
+			drawNextPoints(next, afterNext);
+			driveToPose.setTargetPose(next, afterNext, IAudiCupMotor.LOW_SPEED, true);
 
 			if (currentCarPosition.getDistanceTo(next) < 0.1) {
 				phase = Phase.FORWARD_LEFT;
@@ -106,9 +106,10 @@ public class CrossParking extends AudiCupComplexBehavior
 			}
 
 			return IBehaviorConstants.DRIVE_TO_POSE;
+
 		case FORWARD_LEFT:
 			if (next == null) {
-				next = afterNext;
+				next = targetSpacePosition.applyTo(new Pose2D(0.3, 0.7, Angle.deg(45)));
 				afterNext = next.applyTo(new Pose2D(1, 0));
 				drawNextPoints(next, afterNext);
 				driveToPose.setTargetPose(next, afterNext, IAudiCupMotor.LOW_SPEED, true);
@@ -123,8 +124,8 @@ public class CrossParking extends AudiCupComplexBehavior
 
 		case BACKWARD_RIGHT:
 			if (next == null) {
-				next = targetSpacePosition.applyTo(new Pose2D(0, 0, Angle.ANGLE_90));
-				afterNext = next.applyTo(new Pose2D(-0.7, 0));
+				next = targetSpacePosition.applyTo(new Pose2D(0, 0.1, Angle.ANGLE_90));
+				afterNext = next.applyTo(new Pose2D(-0.65, 0));
 				drawNextPoints(next, afterNext);
 				driveToPose.setTargetPose(next, afterNext, IAudiCupMotor.LOW_SPEED, true);
 			}
@@ -136,6 +137,7 @@ public class CrossParking extends AudiCupComplexBehavior
 			}
 
 			return IBehaviorConstants.DRIVE_TO_POSE;
+
 		case BACKWARD:
 			if (next == null) {
 				next = afterNext;
@@ -153,10 +155,19 @@ public class CrossParking extends AudiCupComplexBehavior
 				return NONE;
 			}
 
+			ParkingSpace closestSpace = getWorldModel().getEnvironmentManager().getClosestParkingSpace(
+					getWorldModel().getThisCar().getPose());
+			if (closestSpace != null) {
+				getWorldModel().getEnvironmentManager().updateParkingSpace(
+						closestSpace.getID(), ParkingSpaceState.OCCUPIED, getWorldModel().getGlobalTime());
+			}
+
 			return IBehaviorConstants.DRIVE_TO_POSE;
+
 		case ENDING:
 			if (time - agentModel.getLight(LightName.WARN).getModificationTime() > 4f) {
 				agentModel.getLight(LightName.WARN).turnOff();
+
 				phase = Phase.FINISHED;
 			}
 			break;

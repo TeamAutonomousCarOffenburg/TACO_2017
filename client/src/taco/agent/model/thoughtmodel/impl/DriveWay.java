@@ -86,7 +86,7 @@ public class DriveWay
 	public boolean isObstacleBehind()
 	{
 		double centerThreshold = calculateThreshold(1.5, 0.3);
-		double outerThreshold = calculateThreshold(1.25, 0.2);
+		double outerThreshold = calculateThreshold(1.25, 0.15);
 		IAudiCupAgentModel agentModel = thoughtModel.getAgentModel();
 
 		return agentModel.getUltrasonic(REAR_LEFT).isCloserThan(outerThreshold) ||

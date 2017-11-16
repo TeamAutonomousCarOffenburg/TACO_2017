@@ -1,7 +1,6 @@
 package taco.agent.decision.behavior.impl;
 
 import hso.autonomy.agent.decision.behavior.BehaviorMap;
-import hso.autonomy.agent.decision.behavior.IBehavior;
 import hso.autonomy.agent.model.thoughtmodel.IThoughtModel;
 import hso.autonomy.util.geometry.Angle;
 import hso.autonomy.util.geometry.IPose2D;
@@ -20,19 +19,29 @@ import java.util.List;
 
 public class OvertakeObstacle extends AudiCupComplexBehavior
 {
+	private enum Phase { DRIVE, BACKWARDS, FORWARD_LEFT, OVERTAKE, FORWARD_RIGHT, ENDING, FINISHED }
+
 	private Phase phase;
+
 	private List<Double> distancesSide;
+
 	private IPose2D overtakenPosition;
+
 	private IPose2D startPosition;
+
 	private boolean isMoving, initCheck, onCurve;
+
 	private FollowLeftLane followLeftLane;
+
 	private DriveToPose driveToPose;
+
 	private IPose2D next;
+
 	private IPose2D afterNext;
+
 	public OvertakeObstacle(IThoughtModel thoughtModel, BehaviorMap behaviors)
 	{
 		super(IBehaviorConstants.OVERTAKE_OBSTACLE, thoughtModel, behaviors);
-
 		followLeftLane = (FollowLeftLane) behaviors.get(IBehaviorConstants.FOLLOW_LEFT_LANE);
 		driveToPose = (DriveToPose) behaviors.get(IBehaviorConstants.DRIVE_TO_POSE);
 	}
@@ -80,6 +89,7 @@ public class OvertakeObstacle extends AudiCupComplexBehavior
 				phase = Phase.FORWARD_LEFT;
 			}
 			break;
+
 		case FORWARD_LEFT:
 			agentModel.getLight(LightName.INDICATOR_LEFT).turnOn();
 
@@ -112,7 +122,7 @@ public class OvertakeObstacle extends AudiCupComplexBehavior
 
 			if (usFront.getDistance() < 0.5) {
 				agentModel.getMotor().stop();
-				phase = Phase.FINISHED;
+				finish();
 				return NONE;
 			}
 
@@ -146,18 +156,24 @@ public class OvertakeObstacle extends AudiCupComplexBehavior
 
 		case FORWARD_RIGHT:
 			if (overtakenPosition == null || currentCarPosition.getDistanceTo(overtakenPosition) > 0.3) {
-				agentModel.getLight(LightName.INDICATOR_RIGHT).turnOff();
 				if (isMoving) {
 					followLeftLane.setSpeed(IAudiCupMotor.DEFAULT_SPEED);
 				}
-				phase = Phase.FINISHED;
-				drawNextPoints(null, null);
-				distancesSide.clear();
+				finish();
 			}
 			return IBehaviorConstants.FOLLOW_RIGHT_LANE;
 		}
 
 		return NONE;
+	}
+
+	private void finish()
+	{
+		getAgentModel().getLight(LightName.INDICATOR_RIGHT).turnOff();
+		getAgentModel().getLight(LightName.INDICATOR_LEFT).turnOff();
+		drawNextPoints(null, null);
+		distancesSide.clear();
+		phase = Phase.FINISHED;
 	}
 
 	private void checkInit()
@@ -168,7 +184,7 @@ public class OvertakeObstacle extends AudiCupComplexBehavior
 				phase = Phase.FORWARD_LEFT;
 			}
 
-			if (getWorldModel().closeToCurve()) {
+			if (getWorldModel().isCloseToCurve()) {
 				onCurve = true;
 			}
 
@@ -195,16 +211,12 @@ public class OvertakeObstacle extends AudiCupComplexBehavior
 
 	private boolean onSide()
 	{
-		if (distancesSide.size() > 10 && distancesSide.stream().filter(distance -> distance < 0.6).count() > 5) {
-			return true;
-		}
-
-		return false;
+		return distancesSide.size() > 10 && distancesSide.stream().filter(distance -> distance < 0.6).count() > 5;
 	}
 
 	private boolean checkAbort(IPose2D currentCarPosition)
 	{
-		return (startPosition.getDistanceTo(currentCarPosition) > 3 && !onSide());
+		return startPosition.getDistanceTo(currentCarPosition) > 3 && !onSide();
 	}
 
 	private void drawNextPoints(IPose2D next, IPose2D afterNext)
@@ -233,6 +245,4 @@ public class OvertakeObstacle extends AudiCupComplexBehavior
 	{
 		return phase == Phase.FINISHED;
 	}
-
-	private enum Phase { DRIVE, BACKWARDS, FORWARD_LEFT, OVERTAKE, FORWARD_RIGHT, ENDING, FINISHED }
 }

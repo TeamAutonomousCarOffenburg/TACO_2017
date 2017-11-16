@@ -49,6 +49,7 @@ import taco.agent.model.worldmodel.street.Segment;
 import taco.agent.model.worldmodel.street.SegmentLink;
 import taco.agent.model.worldmodel.street.SegmentType;
 import taco.agent.model.worldmodel.street.StreetMap;
+import taco.util.SignType;
 
 public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 {
@@ -72,7 +73,7 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 
 	private boolean hasJuryActionChanged = false;
 
-	public AudiCupWorldModel(IAgentModel agentModel, ILocalizer localizer, IScenario scenario)
+	public AudiCupWorldModel(IAgentModel agentModel, ILocalizer localizer, IScenario scenario, IPose2D startPose)
 	{
 		super(agentModel, localizer);
 
@@ -83,7 +84,9 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 		environmentManager = new EnvironmentManager(
 				getAgentModel().getParkingSpaceActuator(), getAgentModel().getRoadSignActuator(), map);
 
-		IPose2D startPose = scenario.getStartPose();
+		if (startPose == null) {
+			startPose = scenario.getStartPose();
+		}
 		thisCar = new ThisCar(startPose);
 		gyroOdometry = new GyroOdometry(getAgentModel().getCarMetaModel().getFrontAxle().getWheelDiameter(), startPose);
 		resetCurrentSegment(startPose);
@@ -176,12 +179,12 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 				obstacles.add(new Obstacle(globalTime, recognizedObject.getType(), globalArea));
 			}
 
-			obstacles.stream()
-					.map(visibleObject -> (Obstacle) visibleObject)
-					.filter(obstacle -> obstacle.getType().isObjectForBackend())
-					.forEach(obstacle
-							-> getAgentModel().getObstaclePositionActuator().setObstacle(
-									VectorUtils.to2D(obstacle.getPosition())));
+			//			obstacles.stream()
+			//					.map(visibleObject -> (Obstacle) visibleObject)
+			//					.filter(obstacle -> obstacle.getType().isObjectForBackend())
+			//					.forEach(obstacle
+			//							-> getAgentModel().getObstaclePositionActuator().setObstacle(
+			//									VectorUtils.to2D(obstacle.getPosition())));
 		} else {
 			obstacles = getRecognizedObjects()
 								.stream()
@@ -223,7 +226,8 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 		if (signPerceptor != null) {
 			for (RoadSign sign : signPerceptor.getSigns()) {
 				// filter zero-pos
-				if (sign.getPose().getPosition().distance(Vector3D.ZERO) < 0.1) {
+				if ((sign.getPose().getPosition().distance(Vector3D.ZERO) < 0.1) ||
+						(sign.getSignType() == SignType.TESTCOURSE_A9) || sign.getSignType() == SignType.UNKNOWN) {
 					continue;
 				}
 
@@ -334,12 +338,18 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 		}
 
 		if (whereWeAreNow.getID() != currentSegment.getID()) {
-			currentSegment.switchToSegment(whereWeAreNow, thisCar.getPose().getAngle());
-			// do lateral repositioning based on lane middle detection
-			IPose2D newPose =
-					laneMiddleSensor.calculateLateralRepositioningOnSegmentChange(currentSegment, thisCar.getPose());
-			if (newPose != null) {
-				reposition(newPose);
+			// we entered a new segment. Check if we are in some mm
+			double delta = 0.005;
+			Segment slightlyBehindUs =
+					map.getSegmentContaining(thisCar.getPose().applyTo(new Pose2D(-delta, 0)).getPosition());
+			if (slightlyBehindUs != null && slightlyBehindUs.getID() == whereWeAreNow.getID()) {
+				currentSegment.switchToSegment(whereWeAreNow, thisCar.getPose().getAngle());
+				// do lateral repositioning based on lane middle detection
+				IPose2D newPose = laneMiddleSensor.calculateLateralRepositioningOnSegmentChange(
+						currentSegment, thisCar.getPose(), delta);
+				if (newPose != null) {
+					reposition(newPose);
+				}
 			}
 		}
 	}
@@ -466,7 +476,7 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 	}
 
 	@Override
-	public boolean closeToCrosswalk()
+	public boolean isCloseToCrosswalk()
 	{
 		Segment currentSegment = getCurrentSegment().getSegment();
 		Segment nextSegment = getCurrentSegment().getIntendedOption().getSegmentAfter();
@@ -488,7 +498,7 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 	}
 
 	@Override
-	public boolean closeToCrossing()
+	public boolean isCloseToCrossing()
 	{
 		Segment nextSegment = getCurrentSegment().getIntendedOption().getSegmentAfter();
 
@@ -510,7 +520,7 @@ public class AudiCupWorldModel extends WorldModel implements IAudiCupWorldModel
 	}
 
 	@Override
-	public boolean closeToCurve()
+	public boolean isCloseToCurve()
 	{
 		Segment currentSegment = getCurrentSegment().getSegment();
 		Segment nextSegment = getCurrentSegment().getIntendedOption().getSegmentAfter();

@@ -25,7 +25,8 @@ public class AudiCupAgentRuntime extends AgentRuntime
 				factory.createAgentMetaModel(runtimeParameters.getMetaModelDirectory(), runtimeParameters.getVersion());
 
 		IAudiCupAgentModel agentModel = factory.createAgentModel(agentMetaModel);
-		IAudiCupWorldModel worldModel = factory.createWorldModel(agentModel, runtimeParameters.getScenario());
+		IAudiCupWorldModel worldModel =
+				factory.createWorldModel(agentModel, runtimeParameters.getScenario(), runtimeParameters.getStartPose());
 		thoughtModel = factory.createThoughtModel(agentModel, worldModel);
 
 		action = factory.createAction(channelManager, agentMetaModel);

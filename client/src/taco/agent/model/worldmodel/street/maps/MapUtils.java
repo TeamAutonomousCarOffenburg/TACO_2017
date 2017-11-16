@@ -59,6 +59,12 @@ public class MapUtils
 		addParking(map, segmentID, dir, SegmentType.PARKING_SPACE_VERTICAL, firstID, occupied, 0.25);
 	}
 
+	public static void addParkingVertical(
+			StreetMap map, int segmentID, Direction dir, int firstID, boolean ascending, boolean[] occupied)
+	{
+		addParking(map, segmentID, dir, SegmentType.PARKING_SPACE_VERTICAL, firstID, ascending, occupied, 0.25);
+	}
+
 	public static void addParkingHorizontal(
 			StreetMap map, int segmentID, Direction dir, int firstID, boolean[] occupied)
 	{
@@ -68,9 +74,16 @@ public class MapUtils
 	public static ParkingSegment addParking(StreetMap map, int segmentID, Direction dir, SegmentType type, int firstID,
 			boolean[] occupied, double translation)
 	{
+		return addParking(map, segmentID, dir, type, firstID, true, occupied, translation);
+	}
+
+	public static ParkingSegment addParking(StreetMap map, int segmentID, Direction dir, SegmentType type, int firstID,
+			boolean ascending, boolean[] occupied, double translation)
+	{
 		Segment segment = map.getSegment(segmentID);
 		SegmentLink parking = segment.getInOption(dir);
-		ParkingSegment parkingSegment = new ParkingSegment(map, type, firstID, parking, translation, occupied);
+		ParkingSegment parkingSegment =
+				new ParkingSegment(map, type, firstID, ascending, parking, translation, occupied);
 		parking.getSegmentAfter().setAttachedOption(parkingSegment.getInOptionByParkingID(firstID));
 		addSign(segment, dir, SignType.PARKING_AREA);
 		return parkingSegment;

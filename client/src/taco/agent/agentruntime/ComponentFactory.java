@@ -13,6 +13,7 @@ import hso.autonomy.agent.model.agentmodel.IAgentModel;
 import hso.autonomy.agent.model.agentmodel.impl.ik.impl.JacobianTransposeAgentIKSolver;
 import hso.autonomy.agent.model.thoughtmodel.IThoughtModel;
 import hso.autonomy.agent.model.worldmodel.localizer.impl.LocalizerFieldNormal;
+import hso.autonomy.util.geometry.IPose2D;
 import kdo.util.parameter.ParameterMap;
 import taco.agent.agentruntime.scenarios.IScenario;
 import taco.agent.communication.action.IAudiCupAction;
@@ -76,9 +77,9 @@ public class ComponentFactory
 		return new AudiCupAgentModel(agentMetaModel, new JacobianTransposeAgentIKSolver());
 	}
 
-	public IAudiCupWorldModel createWorldModel(IAgentModel agentModel, IScenario scenario)
+	public IAudiCupWorldModel createWorldModel(IAgentModel agentModel, IScenario scenario, IPose2D startPose)
 	{
-		return new AudiCupWorldModel(agentModel, new LocalizerFieldNormal(), scenario);
+		return new AudiCupWorldModel(agentModel, new LocalizerFieldNormal(), scenario, startPose);
 	}
 
 	public IAudiCupThoughtModel createThoughtModel(IAgentModel agentModel, IAudiCupWorldModel worldModel)

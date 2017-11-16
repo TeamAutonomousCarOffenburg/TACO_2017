@@ -27,7 +27,11 @@ public class ParkingSpaceActuator extends AudiCupActuator implements IParkingSpa
 	@Override
 	public boolean createAction(IAudiCupAction action, Map<String, IEffector> effectors)
 	{
+		if (parkingSpace == null) {
+			return false;
+		}
 		effectors.put(getName(), new ParkingSpaceEffector(parkingSpace));
+		parkingSpace = null;
 		return true;
 	}
 }

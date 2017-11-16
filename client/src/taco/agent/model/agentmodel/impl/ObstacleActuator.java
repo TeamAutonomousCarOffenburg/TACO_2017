@@ -27,7 +27,11 @@ public class ObstacleActuator extends AudiCupActuator implements IObstacleActuat
 	@Override
 	public boolean createAction(IAudiCupAction action, Map<String, IEffector> effectors)
 	{
+		if (obstacle == null) {
+			return false;
+		}
 		effectors.put(getName(), new ObstacleEffector(obstacle.getX(), obstacle.getY()));
+		obstacle = null;
 		return true;
 	}
 }

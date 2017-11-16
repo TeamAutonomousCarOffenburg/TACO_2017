@@ -228,7 +228,8 @@ public class LaneMiddleSensor implements ILaneMiddleSensor
 	}
 
 	@Override
-	public IPose2D calculateLateralRepositioningOnSegmentChange(RuntimeSegment currentSegment, IPose2D carPose)
+	public IPose2D calculateLateralRepositioningOnSegmentChange(
+			RuntimeSegment currentSegment, IPose2D carPose, double delta)
 	{
 		if (consecutiveFollowRightLanePerforms < 30) {
 			return null;
@@ -250,7 +251,15 @@ public class LaneMiddleSensor implements ILaneMiddleSensor
 			}
 		}
 
-		return new Pose2D(mapPose.getX(), mapPose.getY(), newAngle);
+		// we reposition slightly into the new segment, since the test does the same
+		// mapPose = mapPose.applyTo(new Pose2D(delta, 0));
+
+		// we do only sidewise adjustment
+		IPose2D localCarPose = mapPose.applyInverseTo(carPose);
+		IPose2D adjustedLocalCarPose = new Pose2D(localCarPose.getX(), 0, localCarPose.getAngle());
+		IPose2D newPose = mapPose.applyTo(adjustedLocalCarPose);
+
+		return new Pose2D(newPose.getX(), newPose.getY(), newAngle);
 	}
 
 	@Override

@@ -134,10 +134,11 @@ public class RoadSignUtils
 
 	public static void removeSignFromMap(StreetMap map, RoadSign removedSign)
 	{
-		map.getSegmentContaining(removedSign.getPose().getPosition())
-				.getOutOption(Direction.getDirection(removedSign.getPose().getAngle()))
-				.getRoadSigns()
-				.remove(removedSign);
+		Direction direction = Direction.getDirection(removedSign.getPose().getAngle());
+		Segment segmentToRemoveSign = map.getSegmentContaining(removedSign.getPose().getPosition());
+		if (segmentToRemoveSign.hasOutOption(direction)) {
+			segmentToRemoveSign.getOutOption(direction).getRoadSigns().remove(removedSign);
+		}
 	}
 
 	/**

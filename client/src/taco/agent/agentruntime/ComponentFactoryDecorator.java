@@ -7,6 +7,7 @@ import hso.autonomy.agent.decision.decisionmaker.IDecisionMaker;
 import hso.autonomy.agent.model.agentmeta.IAgentMetaModel;
 import hso.autonomy.agent.model.agentmodel.IAgentModel;
 import hso.autonomy.agent.model.thoughtmodel.IThoughtModel;
+import hso.autonomy.util.geometry.IPose2D;
 import kdo.util.parameter.ParameterMap;
 import taco.agent.agentruntime.scenarios.IScenario;
 import taco.agent.communication.action.IAudiCupAction;
@@ -44,9 +45,9 @@ public class ComponentFactoryDecorator extends ComponentFactory
 	}
 
 	@Override
-	public IAudiCupWorldModel createWorldModel(IAgentModel agentModel, IScenario scenario)
+	public IAudiCupWorldModel createWorldModel(IAgentModel agentModel, IScenario scenario, IPose2D startPose)
 	{
-		return decoratee.createWorldModel(agentModel, scenario);
+		return decoratee.createWorldModel(agentModel, scenario, startPose);
 	}
 
 	@Override

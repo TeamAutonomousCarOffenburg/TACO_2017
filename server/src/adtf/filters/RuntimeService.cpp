@@ -157,15 +157,17 @@ void RuntimeService::actuatorThread()
 		long elapsedTimeMs;
 		beforeCycle = system_clock::now();
 
+		if (beforeCycle - startTime > milliseconds(100)) {
+			if (!_visionStarted && GetPropertyBool(PROPERTY_START_VISION)) {
+				StartVision();
+				_visionStarted = true;
+			}
+		}
+
 		if (beforeCycle - startTime > seconds(5)) {
 			if (!_clientStarted && GetPropertyBool(PROPERTY_START_CLIENT)) {
 				StartClient();
 				_clientStarted = true;
-			}
-
-			if (!_visionStarted && GetPropertyBool(PROPERTY_START_VISION)) {
-				StartVision();
-				_visionStarted = true;
 			}
 		}
 
@@ -290,6 +292,12 @@ void RuntimeService::RunCommandInDirectory(string command, string directory)
 tResult RuntimeService::Stop(__exception)
 {
 	try {
+		std::string command = "pkill -f -SIGUSR1 object_detection_server.py";
+		cout << command << endl;
+		if (system(command.c_str()) == -1) {
+			cout << "Could not kill object detection" << endl;
+		}
+
 		_running = false;
 		_laneDetection->stop();
 		//_objectDetection->stop();

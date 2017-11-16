@@ -27,9 +27,7 @@
     <connection connection_priority="50" dest="Base_Config.WatchdogAlive" interface="" source="AADC_Watchdog_Trigger.WatchdogAliveSignal" />
     <filter alias="TACO_Runtime_Service" idref="adtf.taco.RuntimeService" priority="-5">
      <settings>
-      <property name="Client Scenario" type="String" value="driveWaypoints" />
-      <property name="Start Vision" type="Bool" value="false" />
-      <property name="Start Client" type="Bool" value="false" />
+      <property name="Client Scenario" type="String" value="aadc2017Final" />
      </settings>
     </filter>
     <filter alias="TACO_Rate_Limit" idref="adtf.taco.RateLimit" priority="-4" />
@@ -131,8 +129,8 @@
     <connection connection_priority="50" dest="AADC_Marker_Detector.Video_RGB_input" interface="" source="TACO_Fisheye_Undistortion_ROI.Video_Output" />
     <connection connection_priority="50" dest="TACO_Runtime_Service.Signs" interface="" source="AADC_Marker_Detector.RoadSign_ext" />
     <connection active="false" connection_priority="50" dest="TACO_Image_Writer.Video_input" interface="" source="TACO_Fisheye_Undistortion_ROI.Video_Output" />
-    <subgraph alias="Jury_Visualization_Position" idref="Jury_Visualization_Position" priority="9" url="udp://192.168.1.20:30000" />
-    <connection connection_priority="50" dest="Jury_Visualization_Position.Position" interface="" source="TACO_Runtime_Service.Position_output" />
+    <subgraph active="false" alias="Jury_Visualization_Position" idref="Jury_Visualization_Position" priority="9" url="udp://192.168.1.20:30000" />
+    <connection active="false" connection_priority="50" dest="Jury_Visualization_Position.Position_raw" interface="" source="TACO_Runtime_Service.Position_output" />
     <filter alias="AADC_Map_Visualization" idref="adtf.aadc.MapVisualization" priority="10">
      <settings>
       <property name="IndoorMap File" type="String" value="../../../maps/aadc2017#2.xodr" />
@@ -253,7 +251,7 @@
   </configuration>
   <configuration description="" name="Jury_Visualization_Position">
    <graph>
-    <inport alias="Position" />
+    <inport alias="Position_raw" />
    </graph>
   </configuration>
   <configuration description="" name="Jury_Visualization_Objects">

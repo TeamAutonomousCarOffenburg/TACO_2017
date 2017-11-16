@@ -7,7 +7,6 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import hso.autonomy.agent.decision.behavior.BehaviorMap;
 import hso.autonomy.agent.decision.behavior.IBehavior;
 import hso.autonomy.agent.model.thoughtmodel.IThoughtModel;
-import hso.autonomy.util.geometry.Angle;
 import hso.autonomy.util.geometry.Geometry;
 import hso.autonomy.util.geometry.Polygon;
 import taco.agent.communication.perception.JuryAction;
@@ -71,9 +70,11 @@ public class AudiCupDecisionMaker extends AudiCupDecisionMakerBase
 			double obstacleDistance = getThoughtModel().getObstacleAheadDistance(distance);
 
 			double limitedSpeed = Geometry.getLinearFuzzyValue(0.3, 2.3, true, obstacleDistance) * 80;
-			speed = Math.min(speed, limitedSpeed);
-			if (speed < 21) {
-				speed = 21;
+			if (speed > limitedSpeed) {
+				speed = limitedSpeed;
+				if (speed < 21) {
+					speed = 21;
+				}
 			}
 			getAgentModel().getMotor().drive(speed);
 		}

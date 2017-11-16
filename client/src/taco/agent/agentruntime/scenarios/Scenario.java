@@ -23,7 +23,8 @@ public enum Scenario {
 	FOLLOW_INNER_LANE(() -> new FollowLaneScenario(3)),
 	FOLLOW_LANE_LEARNING(() -> new FollowLaneLearningScenario(5)),
 	AADC_2015(AADC2015Scenario::new),
-	AADC_2017_QUALI(AADC2017QualiScenario::new);
+	AADC_2017_QUALI(AADC2017QualiScenario::new),
+	AADC_2017_FINAL(AADC2017FinalScenario::new);
 
 	public static final Scenario DEFAULT = DRIVE_WAYPOINTS;
 

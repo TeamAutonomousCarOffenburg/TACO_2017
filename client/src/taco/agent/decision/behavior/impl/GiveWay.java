@@ -1,9 +1,9 @@
 package taco.agent.decision.behavior.impl;
 
 import hso.autonomy.agent.model.thoughtmodel.IThoughtModel;
+import hso.autonomy.util.geometry.Angle;
 import hso.autonomy.util.geometry.Area2D;
 import hso.autonomy.util.geometry.Polygon;
-import hso.autonomy.util.logging.DrawingMap;
 import taco.agent.communication.perception.RecognizedObjectType;
 import taco.agent.decision.behavior.IBehaviorConstants;
 import taco.agent.decision.behavior.base.AudiCupBehavior;
@@ -24,13 +24,16 @@ import taco.util.rightofway.RightOfWayAnalyzer;
 
 import java.awt.Color;
 import java.util.List;
-import java.util.function.BiFunction;
 
 /** Behavior that waits until we have right of way */
 public class GiveWay extends AudiCupBehavior
 {
 	/** the time we wait at a crossing before checking again if we have to give way (in s) */
 	private static final float GIVE_WAY_WAIT_TIME = 3.0f;
+
+	private static final float CROSSWALK_WAIT_TIME = 10.0f;
+
+	private static final Polygon CROSSING_OPTION_AREA = new Polygon(new Area2D.Float(-0.7, 0.1, -0.25, 0.25));
 
 	private enum Phase { CHECKING_ACTION, WAITING, FINISHED }
 
@@ -44,6 +47,10 @@ public class GiveWay extends AudiCupBehavior
 	/** true if we have stopped already at a stop and wait crossing */
 	private boolean haveStopped;
 
+	private float waitDuration;
+
+	private Phase phaseAfterWait;
+
 	public GiveWay(IThoughtModel thoughtModel)
 	{
 		super(IBehaviorConstants.GIVE_WAY, thoughtModel);
@@ -56,6 +63,8 @@ public class GiveWay extends AudiCupBehavior
 		phase = Phase.CHECKING_ACTION;
 		waitStartTime = 0;
 		haveStopped = false;
+		waitDuration = 0;
+		phaseAfterWait = null;
 	}
 
 	@Override
@@ -72,28 +81,66 @@ public class GiveWay extends AudiCupBehavior
 		switch (phase) {
 		case CHECKING_ACTION:
 			List<DrivePoint> path = getWorldModel().getThisCar().getPath().getDrivePath();
-			RightOfWayAction action = determineRightOfWayAction(path.get(1), path.get(2));
+			DrivePoint inPoint = path.get(1);
 
-			if (action == RightOfWayAction.DRIVE) {
-				phase = Phase.FINISHED;
-			} else if (action == RightOfWayAction.STOP_THEN_DRIVE && haveStopped) {
-				phase = Phase.FINISHED;
+			if (getWorldModel().isCloseToCrosswalk()) {
+				if (isPedestrianNearCrosswalk()) {
+					stopAndWait(CROSSWALK_WAIT_TIME, Phase.FINISHED);
+				}
 			} else {
-				getAgentModel().getMotor().stop();
-				waitStartTime = getWorldModel().getGlobalTime();
-				haveStopped = true;
-				phase = Phase.WAITING;
-			}
+				RightOfWayAction action = determineRightOfWayAction(inPoint, path.get(2));
 
+				if (action == RightOfWayAction.DRIVE) {
+					phase = Phase.FINISHED;
+				} else if (action == RightOfWayAction.STOP_THEN_DRIVE && haveStopped) {
+					phase = Phase.FINISHED;
+				} else {
+					stopAndWait(GIVE_WAY_WAIT_TIME, Phase.CHECKING_ACTION);
+				}
+			}
 			break;
 
 		case WAITING:
-			if (getWorldModel().getGlobalTime() - waitStartTime >= GIVE_WAY_WAIT_TIME) {
+			if (getWorldModel().getGlobalTime() - waitStartTime >= waitDuration) {
 				// we check again next cycle
-				phase = Phase.CHECKING_ACTION;
+				phase = phaseAfterWait;
 			}
 			break;
 		}
+	}
+
+	private boolean isPedestrianNearCrosswalk()
+	{
+		Segment crosswalk = getWorldModel().getCurrentSegment().getIntendedOption().getSegmentAfter();
+
+		float borderX = -0.5f;
+		float borderY = -0.6f;
+		if (crosswalk.getRotation().equals(Angle.ANGLE_90)) {
+			float temp = borderY;
+			borderY = borderX;
+			borderX = temp;
+		}
+
+		Area2D.Float area = crosswalk.getArea().applyBorder(borderX, borderY);
+
+		boolean pedestrianNearCrosswalk = getWorldModel()
+												  .getRecognizedObjects()
+												  .stream()
+												  .filter(o -> o.getType().isPedestrian())
+												  .anyMatch(o -> area.contains(o.getPosition()));
+		drawCheckArea("crosswalk", new Polygon(area), pedestrianNearCrosswalk);
+		return pedestrianNearCrosswalk;
+	}
+
+	private void stopAndWait(float waitDuration, Phase phaseAfterWait)
+	{
+		this.waitDuration = waitDuration;
+		this.phaseAfterWait = phaseAfterWait;
+
+		getAgentModel().getMotor().stop();
+		waitStartTime = getWorldModel().getGlobalTime();
+		haveStopped = true;
+		phase = Phase.WAITING;
 	}
 
 	private RightOfWayAction determineRightOfWayAction(DrivePoint inPoint, DrivePoint outPoint)
@@ -133,7 +180,7 @@ public class GiveWay extends AudiCupBehavior
 											 .getRecognizedObjects(RecognizedObjectType.CAR)
 											 .stream()
 											 .anyMatch(car -> crossingArea.intersects(car.getArea()));
-		drawCrossingArea("obstacleInCrossing", crossingArea, obstacleInCrossing);
+		drawCheckArea("obstacleInCrossing", crossingArea, obstacleInCrossing);
 		return obstacleInCrossing;
 	}
 
@@ -141,44 +188,51 @@ public class GiveWay extends AudiCupBehavior
 	{
 		SegmentLink inLink = inPoint.getGoalLink();
 		Segment crossing = inLink.getSegmentAfter();
-		SegmentLink west = crossing.getInOption(Direction.getLeft(inLink.getDirection()));
-		SegmentLink north = crossing.getInOption(inLink.getDirection());
-		SegmentLink east = crossing.getInOption(Direction.getRight(inLink.getDirection()));
 
-		Polygon crossingOptionArea = new Polygon(new Area2D.Float(-0.7, 0.1, -0.25, 0.25));
+		Polygon west = getCrossingOptionArea(crossing, Direction.getLeft(inLink.getDirection()));
+		Polygon north = getCrossingOptionArea(crossing, inLink.getDirection());
+		Polygon east = getCrossingOptionArea(crossing, Direction.getRight(inLink.getDirection()));
 
 		boolean isCarNorth = false;
 		boolean isCarEast = false;
 		boolean isCarWest = false;
 
 		for (Obstacle car : getWorldModel().getRecognizedObjects(RecognizedObjectType.CAR)) {
-			Polygon polygon = new Polygon(car.getArea());
+			Polygon carBounds = new Polygon(car.getArea());
 
-			BiFunction<String, SegmentLink, Boolean> checkOption = (name, option) ->
-			{
-				DrawingMap drawings = getThoughtModel().getDrawings();
-				if (option != null) {
-					Polygon optionArea = crossingOptionArea.transform(option.getPose());
-					boolean collision = polygon.intersects(optionArea);
-					drawCrossingArea(name, optionArea, collision);
-					return collision;
-				} else {
-					drawings.remove(name);
-					return false;
-				}
-			};
-
-			isCarNorth = isCarNorth || checkOption.apply("north", north);
-			isCarEast = isCarEast || checkOption.apply("east", east);
-			isCarWest = isCarWest || checkOption.apply("west", west);
+			if (north != null && north.intersects(carBounds)) {
+				isCarNorth = true;
+			}
+			if (east != null && east.intersects(carBounds)) {
+				isCarEast = true;
+			}
+			if (west != null && west.intersects(carBounds)) {
+				isCarWest = true;
+			}
 		}
+
+		drawCheckArea("north", north, isCarNorth);
+		drawCheckArea("east", east, isCarEast);
+		drawCheckArea("west", west, isCarWest);
 
 		return new CarPositions(isCarNorth, isCarEast, isCarWest);
 	}
 
-	private void drawCrossingArea(String name, Polygon crossingArea, boolean containsObstacle)
+	private Polygon getCrossingOptionArea(Segment crossing, Direction inOption)
 	{
-		getThoughtModel().getDrawings().draw(
-				name, containsObstacle ? new Color(255, 0, 0, 75) : new Color(0, 255, 0, 75), crossingArea);
+		if (crossing.hasInOption(inOption)) {
+			return CROSSING_OPTION_AREA.transform(crossing.getInOption(inOption).getPose());
+		}
+		return null;
+	}
+
+	private void drawCheckArea(String name, Polygon crossingArea, boolean containsObstacle)
+	{
+		if (crossingArea == null) {
+			getThoughtModel().getDrawings().remove(name);
+		} else {
+			getThoughtModel().getDrawings().draw(
+					name, containsObstacle ? new Color(255, 0, 0, 75) : new Color(0, 255, 0, 75), crossingArea);
+		}
 	}
 }

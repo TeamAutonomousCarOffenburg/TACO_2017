@@ -61,6 +61,10 @@ public class LaneMiddle
 		invalidSince = perceptor.getInvalidSince();
 
 		Vector3D[] lines = SegmentUtils.getLinePositions(carPose, LaneMiddle.SCANLINE, map);
+		if (lines.length > 3) {
+			// we have more than one midline in map, so do not trust map
+			lines = new Vector3D[3];
+		}
 		int[] pixelX = {perceptor.getRightLineX(), perceptor.getMiddleLineX(), perceptor.getLeftLineX()};
 		for (int i = 0; i < lines.length; i++) {
 			Vector2D position = getPositionInCarCoordinates(pixelX[i]);
@@ -177,7 +181,7 @@ public class LaneMiddle
 		scanPoints[0] = new ScanPoint(scanPoints[1], scanPoints[0]);
 		scanPoints[1] = new ScanPoint(scanPoints[2], scanPoints[1]);
 		scanPoints[2] = new ScanPoint();
-		middleX = (int) (scanPoints[0].getImageX() + scanPoints[1].getImageX() * 0.5);
+		middleX = (int) ((scanPoints[0].getImageX() + scanPoints[1].getImageX()) * 0.5);
 		aheadLineY = -1;
 		swapped = true;
 	}

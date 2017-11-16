@@ -12,6 +12,7 @@ import taco.agent.decision.behavior.IFollowLane;
 import taco.agent.decision.behavior.base.AudiCupComplexBehavior;
 import taco.agent.model.agentmodel.IAudiCupMotor;
 import taco.agent.model.agentmodel.impl.enums.LightName;
+import taco.agent.model.agentmodel.impl.enums.TachometerPosition;
 import taco.agent.model.thoughtmodel.IAudiCupThoughtModel;
 import taco.agent.model.worldmodel.DriveInstruction;
 import taco.agent.model.worldmodel.driveinstruction.DriveInstructionManager;
@@ -23,6 +24,18 @@ import taco.agent.model.worldmodel.street.*;
 
 public class DriveWaypoints extends AudiCupComplexBehavior
 {
+	private enum DriveState {
+		PROCESSING_INSTRUCTION,
+		DRIVING,
+		APPROACHING_CROSSING,
+		APPROACHING_CROSSWALK,
+		GIVING_WAY,
+		PARKING,
+		PULLING_OUT_RIGHT,
+		PULLING_OUT_LEFT,
+		OVERTAKE_OBSTACLE
+	}
+
 	private static final boolean FOLLOW_LANE_ENABLED = true;
 
 	private static final boolean DRIVE_GEOMETRY_ENABLED = true;
@@ -35,17 +48,6 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 
 	private static final double TURN_LEFT_DISTANCE = 0.15;
 
-	private enum DriveState {
-		PROCESSING_INSTRUCTION,
-		DRIVING,
-		APPROACHING_CROSSING,
-		GIVING_WAY,
-		PARKING,
-		PULLING_OUT_RIGHT,
-		PULLING_OUT_LEFT,
-		OVERTAKE_OBSTACLE
-	}
-
 	/** the current state this behavior is in */
 	private DriveState state;
 
@@ -55,6 +57,8 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 
 	/** id of the segment we happened to be in last cycle */
 	private RuntimeSegment previousSegment;
+
+	private float lastMovementTime;
 
 	public DriveWaypoints(IAudiCupThoughtModel thoughtModel, BehaviorMap behaviors)
 	{
@@ -68,6 +72,7 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 		state = DriveState.PROCESSING_INSTRUCTION;
 		initialized = false;
 		finished = false;
+		lastMovementTime = 0;
 	}
 
 	@Override
@@ -75,6 +80,10 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 	{
 		checkStateSwitch();
 		checkDrivePathUpdate();
+
+		if (Math.abs(getAgentModel().getTachometer(TachometerPosition.LEFT).getSpeed()) > 1) {
+			lastMovementTime = getWorldModel().getGlobalTime();
+		}
 
 		List<DrivePoint> path = new ArrayList<>(getWorldModel().getThisCar().getPath().getDrivePath());
 		if (reachedEndOfPath(path)) {
@@ -212,7 +221,7 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 		DriveInstruction instruction = nextPoint.getInstruction();
 		DriveInstruction nextInstruction = pointAfterNext.getInstruction();
 
-		if (checkOvertakeObstacle()) {
+		if (shouldOvertakeObstacle(path)) {
 			if (!getCurrentBehavior().getName().equals(IBehaviorConstants.OVERTAKE_OBSTACLE)) {
 				getCurrentBehavior().abort();
 			}
@@ -233,6 +242,7 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 			return drive(previousPoint, nextPoint, pointAfterNext);
 
 		case APPROACHING_CROSSING:
+		case APPROACHING_CROSSWALK:
 			if (distanceToNextPoint < GIVE_WAY_DISTANCE) {
 				state = DriveState.GIVING_WAY;
 				return NONE;
@@ -325,6 +335,12 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 				case RIGHT:
 					state = DriveState.APPROACHING_CROSSING;
 					getAgentModel().getLight(LightName.INDICATOR_RIGHT).turnOn();
+					break;
+
+				case FOLLOW_LANE:
+					if (getWorldModel().isCloseToCrosswalk()) {
+						state = DriveState.APPROACHING_CROSSWALK;
+					}
 					break;
 
 				default:
@@ -433,35 +449,49 @@ public class DriveWaypoints extends AudiCupComplexBehavior
 		getAgentModel().getLight(LightName.INDICATOR_RIGHT).turnOff();
 	}
 
-	private boolean checkOvertakeObstacle()
+	private boolean shouldOvertakeObstacle(List<DrivePoint> path)
 	{
+		DriveInstruction currentInstruction = path.get(1).getInstruction();
+		DriveInstruction nextInstruction = path.get(2).getInstruction();
+
+		if (currentInstruction == DriveInstruction.CROSS_PARKING || nextInstruction == DriveInstruction.CROSS_PARKING) {
+			return false;
+		}
+
+		if (currentInstruction == DriveInstruction.PULL_OUT_LEFT ||
+				currentInstruction == DriveInstruction.PULL_OUT_RIGHT) {
+			return false;
+		}
+
 		if (getThoughtModel().isPedestrianAhead()) {
 			return false;
 		}
 
-		if (getWorldModel().closeToCrosswalk()) {
+		if (getWorldModel().isCloseToCrosswalk()) {
 			return false;
 		}
 
-		if (getWorldModel().closeToCrossing()) {
+		if (getWorldModel().isCloseToCrossing()) {
 			return false;
 		}
 
-		if (checkMovingObstacle() || checkFixObstacle()) {
+		if (shouldOvertakeMovingObstacle() || shouldOvertakeStationaryObstacle()) {
 			return true;
 		}
 
 		return false;
 	}
 
-	private boolean checkMovingObstacle()
+	private boolean shouldOvertakeMovingObstacle()
 	{
 		return getThoughtModel().isMovingObstacleAhead() && getThoughtModel().followingObstacleSince() > 2f &&
 				getWorldModel().isStraightStreet(4);
 	}
 
-	private boolean checkFixObstacle()
+	private boolean shouldOvertakeStationaryObstacle()
 	{
-		return (getThoughtModel().isObstacleAhead() && getAgentModel().getMotor().getTargetSpeed() == 0);
+		float secondsSinceLastMovement = getWorldModel().getGlobalTime() - lastMovementTime;
+		return getThoughtModel().isObstacleAhead() && getAgentModel().getMotor().getTargetSpeed() == 0 &&
+				secondsSinceLastMovement >= 3;
 	}
 }
